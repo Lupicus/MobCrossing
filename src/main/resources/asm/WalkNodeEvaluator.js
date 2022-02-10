@@ -4,23 +4,23 @@ var JumpInsnNode = Java.type('org.objectweb.asm.tree.JumpInsnNode')
 
 function initializeCoreMod() {
 	return {
-		'WalkNodeProcessor': {
+		'WalkNodeEvaluator': {
 			'target': {
 				'type': 'CLASS',
-				'name': 'net.minecraft.pathfinding.WalkNodeProcessor'
+				'name': 'net.minecraft.world.level.pathfinder.WalkNodeEvaluator'
 			},
 			'transformer': function(classNode) {
 				var count = 0
-				var fn = asmapi.mapMethod('func_237238_b_') // func_237238_b_
+				var fn = asmapi.mapMethod('m_77643_') // getBlockPathTypeRaw
 				for (var i = 0; i < classNode.methods.size(); ++i) {
 					var obj = classNode.methods.get(i)
 					if (obj.name == fn) {
-						patch_func_237238_b_(obj)
+						patch_m_77643_(obj)
 						count++
 					}
 				}
 				if (count < 1)
-					asmapi.log("ERROR", "Failed to modify WalkNodeProcessor: Method not found")
+					asmapi.log("ERROR", "Failed to modify WalkNodeEvaluator: Method not found")
 				return classNode;
 			}
 		}
@@ -28,9 +28,9 @@ function initializeCoreMod() {
 }
 
 // add jump over rail if block
-function patch_func_237238_b_(obj) {
+function patch_m_77643_(obj) {
 	var node = asmapi.findFirstInstruction(obj, opc.INSTANCEOF)
-	while (node && node.desc != 'net/minecraft/block/AbstractRailBlock') {
+	while (node && node.desc != 'net/minecraft/world/level/block/BaseRailBlock') {
 		var index = obj.instructions.indexOf(node)
 		node = asmapi.findFirstInstructionAfter(obj, opc.INSTANCEOF, index + 1)
 	}
@@ -40,5 +40,5 @@ function patch_func_237238_b_(obj) {
 		obj.instructions.insertBefore(node, new JumpInsnNode(opc.GOTO, node2.label))
 	}
 	else
-		asmapi.log("ERROR", "Failed to modify WalkNodeProcessor: RAIL not found")
+		asmapi.log("ERROR", "Failed to modify WalkNodeEvaluator: RAIL not found")
 }
