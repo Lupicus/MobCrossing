@@ -11,11 +11,11 @@ function initializeCoreMod() {
 			},
 			'transformer': function(classNode) {
 				var count = 0
-				var fn = asmapi.mapMethod('m_264405_') // evaluateBlockPathType
+				var fn = "getPathTypeWithinMobBB"
 				for (var i = 0; i < classNode.methods.size(); ++i) {
 					var obj = classNode.methods.get(i)
 					if (obj.name == fn) {
-						patch_m_264405_(obj)
+						patch_getPT(obj)
 						count++
 					}
 				}
@@ -28,9 +28,9 @@ function initializeCoreMod() {
 }
 
 // add jump over rail if block
-function patch_m_264405_(obj) {
+function patch_getPT(obj) {
 	var node = asmapi.findFirstInstruction(obj, opc.GETSTATIC)
-	while (node && !(node.name == 'RAIL' && node.owner == 'net/minecraft/world/level/pathfinder/BlockPathTypes')) {
+	while (node && !(node.name == 'RAIL' && node.owner == 'net/minecraft/world/level/pathfinder/PathType')) {
 		var index = obj.instructions.indexOf(node)
 		node = asmapi.findFirstInstructionAfter(obj, opc.GETSTATIC, index + 1)
 	}
