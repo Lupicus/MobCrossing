@@ -12,9 +12,10 @@ function initializeCoreMod() {
 			'transformer': function(classNode) {
 				var count = 0
 				var fn = asmapi.mapMethod('m_6603_') // evaluateBlockPathType
+				var fn2 = asmapi.mapMethod('m_264405_') // evaluateBlockPathType 1.19.4
 				for (var i = 0; i < classNode.methods.size(); ++i) {
 					var obj = classNode.methods.get(i)
-					if (obj.name == fn) {
+					if (obj.name == fn || obj.name == fn2) {
 						patch_m_6603_(obj)
 						count++
 					}
